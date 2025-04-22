@@ -17,14 +17,14 @@ services:
       - FIREWALL=on
       - HTTPPROXY=on
       - HTTP_CONTROL_SERVER=on
-      - PORT_FORWARDING=on  # Enable PIA port forwarding
+      - PORT_FORWARDING=on                                   # Enable PIA port forwarding
       - PORT_FORWARDING_STATUS_FILE=/gluetun/forwarded_port  # Save port to file
     volumes:
       - ./gluetun:/gluetun  # Stores forwarded_port file
     ports:
-      - "8080:8080"  # For rutorrent web UI
-      - "8888:8888/tcp"  # for proxy
-#      - "5000:5000"
+      - "6901:6901"         # For noVNC Firefox - for example together with https://addons.mozilla.org/en-US/firefox/addon/xirvik-torrent-to-seedbox-uplo/
+      - "8080:8080"         # For rutorrent web UI
+      - "8888:8888/tcp"     # For HTTPPROXY
     restart: unless-stopped
 
   rtorrent-rutorrent:
@@ -47,3 +47,20 @@ services:
     restart: unless-stopped
 
 
+  firefox-using-volumes:
+    image: accetto/ubuntu-vnc-xfce-firefox-g3:latest
+    container_name: firefox_gluetun
+    depends_on:
+      - gluetun
+    network_mode: "service:gluetun"
+    shm_size: "256m"
+    environment:
+      - VNC_RESOLUTION=1700x900
+      - VNC_PW=${VNC_PW:-headless}
+    volumes:
+      - type: volume
+        source: firefox-profile-volume
+        target: /home/headless/.mozilla/firefox
+
+volumes:
+  firefox-profile-volume:
