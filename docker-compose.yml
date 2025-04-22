@@ -15,6 +15,7 @@ services:
       - OPENVPN_PROTOCOL=tcp
       - REGION=${VPN_REGION}
       - FIREWALL=on
+      - HTTPPROXY=on
       - HTTP_CONTROL_SERVER=on
       - PORT_FORWARDING=on  # Enable PIA port forwarding
       - PORT_FORWARDING_STATUS_FILE=/gluetun/forwarded_port  # Save port to file
@@ -22,6 +23,7 @@ services:
       - ./gluetun:/gluetun  # Stores forwarded_port file
     ports:
       - "8080:8080"  # For rutorrent web UI
+      - "8888:8888/tcp"  # for proxy
 #      - "5000:5000"
     restart: unless-stopped
 
