@@ -12,6 +12,7 @@ services:
       - VPN_TYPE=openvpn
       - OPENVPN_USER=${PIA_USER}
       - OPENVPN_PASSWORD=${PIA_PASS}
+      - OPENVPN_PROTOCOL=tcp
       - REGION=${VPN_REGION}
       - FIREWALL=on
       - HTTP_CONTROL_SERVER=on
