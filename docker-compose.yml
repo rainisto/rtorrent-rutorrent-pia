@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    env_file: .env
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - VPN_SERVICE_PROVIDER=pia
+      - VPN_TYPE=openvpn
+      - OPENVPN_USER=${PIA_USER}
+      - OPENVPN_PASSWORD=${PIA_PASS}
+      - REGION=${VPN_REGION}
+      - FIREWALL=on
+      - HTTP_CONTROL_SERVER=on
+      - PORT_FORWARDING=on  # Enable PIA port forwarding
+      - PORT_FORWARDING_STATUS_FILE=/gluetun/forwarded_port  # Save port to file
+    volumes:
+      - ./gluetun:/gluetun  # Stores forwarded_port file
+    ports:
+      - "8080:8080"  # For rutorrent web UI
+#      - "5000:5000"
+    restart: unless-stopped
+
+  rtorrent-rutorrent:
+    image: docker.io/crazymax/rtorrent-rutorrent:latest
+    container_name: rtorrent-rutorrent
+    depends_on:
+      - gluetun
+    network_mode: "service:gluetun"
+    volumes:
+      - ./rtorrent-data:/downloads
+      - ./gluetun:/gluetun:ro  # Read-only access to forwarded_port
+      - ./scripts:/scripts
+      - ./passwd:/passwd
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - RUTORRENT_PORT=8080
+      - XMLRPC_PORT=5000
+      - RT_INC_PORT=20000
+    restart: unless-stopped
+
+
