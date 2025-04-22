@@ -1,5 +1,5 @@
 # rtorrent-rutorrent-pia
-Running rtorrent behind gluetun
+Running rtorrent behind gluetun with PIA. Automatically edits forward port details to config file.
 
 # to run create .env file with following details:
 PIA_USER=pia_username    
